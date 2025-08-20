@@ -69,3 +69,12 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y,
     random_state=42
 )
+
+# Define separate transformers for both feature types
+numeric_features = X_train.select_dtypes(include=['int64', 'float64']).columns.tolist()
+categorical_features = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
+# Scale the numeric features
+numeric_transformer = Pipeline(steps=[('scaler', StandardScaler())])
+
+# One-hot encode the categoricals
+categorical_transformer = Pipeline(steps=[('onehot', OneHotEncoder(handle_unknown='ignore'))])
