@@ -78,3 +78,10 @@ numeric_transformer = Pipeline(steps=[('scaler', StandardScaler())])
 
 # One-hot encode the categoricals
 categorical_transformer = Pipeline(steps=[('onehot', OneHotEncoder(handle_unknown='ignore'))])
+
+# Combine the transformers into a single preprocessing column transformer
+preprocessor = ColumnTransformer(transformers=[
+        ('num', numeric_transformer, numeric_features),
+        ('cat', categorical_transformer, categorical_features)
+    ]
+)
