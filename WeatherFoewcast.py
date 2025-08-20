@@ -34,3 +34,27 @@ print(df.columns)
 # null_counts = imputed_df.isnull().sum()
 # print(null_counts)
 # --------------------------------------------------------------------------------------
+
+
+df = df.rename(columns={'RainToday': 'RainYesterday', 'RainTomorrow': 'RainToday'})
+df = df[df.Location.isin(['Melbourne', 'MelbourneAirport', 'Watsonia', ])]
+print(df.info())
+
+
+# Create a function to map dates to seasons
+def date_to_season(date):
+    month = date.month
+    if (month == 12) or (month == 1) or (month == 2):
+        return 'Summer'
+    elif (month == 3) or (month == 4) or (month == 5):
+        return 'Autumn'
+    elif (month == 6) or (month == 7) or (month == 8):
+        return 'Winter'
+    elif (month == 9) or (month == 10) or (month == 11):
+        return 'Spring'
+
+
+df['Date'] = pd.to_datetime(df['Date'])
+df['Season'] = df['Date'].apply(date_to_season)
+df = df.drop(columns='Date')
+print(df)
