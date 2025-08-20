@@ -58,3 +58,14 @@ df['Date'] = pd.to_datetime(df['Date'])
 df['Season'] = df['Date'].apply(date_to_season)
 df = df.drop(columns='Date')
 print(df)
+X = df.drop(columns='RainToday', axis=1)
+y = df['RainToday']
+
+print(y.value_counts())
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    stratify=y,
+    random_state=42
+)
