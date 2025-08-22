@@ -110,3 +110,5 @@ grid_search = GridSearchCV(
 grid_search.fit(X_train, y_train)
 test_score = grid_search.score(X_test, y_test)
 print("Test set score: {:.2f}".format(test_score))
+print("\nBest parameters found: ", grid_search.best_params_)
+print("Best cross-validation score: {:.2f}".format(grid_search.best_score_))
