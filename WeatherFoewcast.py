@@ -81,7 +81,32 @@ categorical_transformer = Pipeline(steps=[('onehot', OneHotEncoder(handle_unknow
 
 # Combine the transformers into a single preprocessing column transformer
 preprocessor = ColumnTransformer(transformers=[
-        ('num', numeric_transformer, numeric_features),
-        ('cat', categorical_transformer, categorical_features)
-    ]
+    ('num', numeric_transformer, numeric_features),
+    ('cat', categorical_transformer, categorical_features)
+]
 )
+# Create a pipeline by combining the preprocessing with a Random Forest classifier
+pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', RandomForestClassifier(random_state=42))
+])
+
+# Define a parameter grid to use in a cross validation grid search model optimizer
+param_grid = {
+    'classifier__n_estimators': [50, 100],
+    'classifier__max_depth': [None, 10, 20],
+    'classifier__min_samples_split': [2, 5]
+}
+# Perform grid search cross-validation
+cv = StratifiedKFold(n_splits=5, shuffle=True)
+grid_search = GridSearchCV(
+    estimator=pipeline,
+    param_grid=param_grid,
+    cv=cv,
+    scoring='accuracy',
+    verbose=2
+)
+
+grid_search.fit(X_train, y_train)
+test_score = grid_search.score(X_test, y_test)
+print("Test set score: {:.2f}".format(test_score))
