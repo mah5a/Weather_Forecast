@@ -108,7 +108,44 @@ grid_search = GridSearchCV(
 )
 
 grid_search.fit(X_train, y_train)
-test_score = grid_search.score(X_test, y_test)
-print("Test set score: {:.2f}".format(test_score))
+
 print("\nBest parameters found: ", grid_search.best_params_)
 print("Best cross-validation score: {:.2f}".format(grid_search.best_score_))
+test_score = grid_search.score(X_test, y_test)
+print("Test set score: {:.2f}".format(test_score))
+y_pred = grid_search.predict(X_test)
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# Plot the confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix)
+disp.plot(cmap='Blues')
+plt.title('Confusion Matrix')
+plt.show()
+
+# Extract feature importances
+feature_importances = grid_search.best_estimator_['classifier'].feature_importances_
+
+# Combine numeric and categorical feature names
+feature_names = numeric_features + list(grid_search.best_estimator_['preprocessor']
+                                        .named_transformers_['cat']
+                                        .named_steps['onehot']
+                                        .get_feature_names_out(categorical_features))
+
+feature_importances = grid_search.best_estimator_['classifier'].feature_importances_
+
+importance_df = pd.DataFrame({'Feature': feature_names,
+                              'Importance': feature_importances
+                             }).sort_values(by='Importance', ascending=False)
+
+N = 20  # Change this number to display more or fewer features
+top_features = importance_df.head(N)
+
+# Plotting
+plt.figure(figsize=(10, 6))
+plt.barh(top_features['Feature'], top_features['Importance'], color='skyblue')
+plt.gca().invert_yaxis()  # Invert y-axis to show the most important feature on top
+plt.title(f'Top {N} Most Important Features in predicting whether it will rain today')
+plt.xlabel('Importance Score')
+plt.show()
